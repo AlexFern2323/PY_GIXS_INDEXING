@@ -1,0 +1,583 @@
+GIWAXS/GIXS Indexing Workbench User Tutorial
+
+Overview
+
+The GIWAXS/GIXS workflow uses two Python programs:
+
+1. GIWAXS PNG to NPZ Converter
+2. GIWAXS/GIXS Indexing Workbench
+
+The converter prepares numerical NPZ files from rendered GIWAXS/GIXS PNG images when original numerical data is not available.
+
+The indexing workbench uses the experimental data and a crystal structure file to calculate and compare diffraction reflections.
+
+Three main file types are used:
+
+CIF
+Contains the crystal structure and is used to calculate theoretical reflections.
+
+NPZ
+Contains the numerical reciprocal-space data used by the automatic indexing calculator.
+
+PNG
+Displays the experimental GIWAXS/GIXS image and is used for visual peak selection.
+
+The PNG and NPZ serve different purposes. The PNG is used for visualization, while the automatic indexing calculation is performed using the NPZ data.
+
+
+Converting a PNG to NPZ
+
+When this step is needed
+
+Use the PNG to NPZ Converter when the experimental measurement is available only as a rendered PNG image.
+
+If an NPZ file containing the experimental intensity data and corresponding qr and qz axes is already available, this section can be skipped.
+
+The converter creates an NPZ file containing:
+
+- intensity
+- qr
+- qz
+- mask
+
+The intensity values are reconstructed from the colors in the PNG image. Because of this, converted PNG data should be treated as an approximation of the original numerical measurement.
+
+
+1. Run the converter
+
+Open a terminal or command prompt and navigate to the folder containing:
+
+GIWAXS_PNG_to_NPZ_Converter.py
+
+Run the script with Python:
+
+python GIWAXS_PNG_to_NPZ_Converter.py
+
+Depending on the Python installation, the command may instead be:
+
+python3 GIWAXS_PNG_to_NPZ_Converter.py
+
+On the first run, the program checks for the Python packages it requires. Missing pip-installable packages are installed automatically into the Python environment being used to run the script.
+
+After the script starts, the GIWAXS Easy Batch PNG to NPZ Converter window opens.
+
+
+2. Select the PNG files
+
+Select:
+
+Select PNG files…
+
+Choose one or more GIWAXS/GIXS PNG images.
+
+If all images are located in the same folder, select:
+
+Select an entire folder…
+
+The program displays the number of PNG files selected.
+
+
+3. Enter the reciprocal-space limits
+
+Enter the reciprocal-space limits that match the original plotted image:
+
+- qr minimum
+- qr maximum
+- qz minimum
+- qz maximum
+
+All values are entered in Å⁻¹.
+
+Example:
+
+qr = -1.0 to 2.2 Å⁻¹
+qz = -0.1 to 2.72 Å⁻¹
+
+These limits should match the axes used in the original GIWAXS/GIXS plot.
+
+The values are used to create the numerical q coordinates stored in the output NPZ file.
+
+The converter saves the most recently used values, so the same limits can be reused for additional images with identical axes.
+
+
+4. Check the automatic options
+
+For a standard conversion, keep these options enabled:
+
+Automatically detect and crop the colored q-space panel
+
+This attempts to isolate the experimental reciprocal-space image from surrounding labels, axes, whitespace, and color bars.
+
+Automatically identify the PNG colormap
+
+This determines which supported colormap most closely matches the colors used in the PNG.
+
+If automatic detection is turned off, the colormap must be selected manually.
+
+Preview the first detected crop before converting
+
+This can be enabled to check which portion of the PNG will actually be converted.
+
+The preview shows the detected region on the original image and the region that will be converted.
+
+If the selected region is correct, choose:
+
+Use this crop
+
+If the detected region is incorrect, choose:
+
+Cancel conversion
+
+Then check the image or conversion settings before trying again.
+
+
+5. Convert the PNG files
+
+Select:
+
+Convert all selected PNG files
+
+The conversion log shows the progress of each file.
+
+For each successful conversion, the program reports information such as:
+
+- detected crop
+- detected colormap
+- percentage of valid pixels
+
+The converted file is saved in the same folder as the original PNG.
+
+The output filename ends with:
+
+_qspace_axes.npz
+
+For example:
+
+sample1.png
+
+becomes:
+
+sample1_qspace_axes.npz
+
+The resulting NPZ file can now be used in the GIWAXS/GIXS Indexing Workbench.
+
+
+Running the GIWAXS/GIXS Indexing Workbench
+
+Open a terminal or command prompt and navigate to the folder containing:
+
+GIWAXS_GIXS_Workbench.py
+
+Run the program with Python:
+
+python GIWAXS_GIXS_Workbench.py
+
+or:
+
+python3 GIWAXS_GIXS_Workbench.py
+
+On the first run, the script checks for the required Python packages and installs missing pip-installable dependencies into the active Python environment.
+
+After startup is complete, the GIWAXS/GIXS graphical interface opens.
+
+The main interface includes:
+
+- crystal structure input
+- experimental image display
+- numerical NPZ input
+- automatic indexing
+- manual experimental/calculated peak comparison
+
+Most controls are located on the left side of the window. The reciprocal-space image and calculated reflection overlay are displayed on the right.
+
+
+Loading the CIF file
+
+Find the section labeled:
+
+Lattice and preferred orientation
+
+Next to CIF, select:
+
+Browse…
+
+Choose the .cif file for the material being analyzed.
+
+The program uses the CIF structure to calculate theoretical diffraction reflections.
+
+After loading the CIF, check the displayed lattice parameters:
+
+- a
+- b
+- c
+- alpha
+- beta
+- gamma
+
+Also check the selected space group.
+
+The interface contains the 230 standard crystallographic space groups. The program indicates whether the manually selected space group agrees with the space group contained in the loaded CIF.
+
+
+Preferred orientation
+
+The same section also contains:
+
+- Preferred H
+- Preferred K
+- Preferred L
+
+These values define the preferred crystallographic orientation used by the manually generated reflection pattern.
+
+This manual reflection pattern is separate from the full automatic NPZ indexing calculation.
+
+
+Loading the experimental PNG
+
+Find the section labeled:
+
+Experimental image and display
+
+Next to Image, select:
+
+Browse…
+
+Choose the PNG image that corresponds to the experimental measurement.
+
+The image appears in the reciprocal-space display.
+
+The following settings control how the PNG is displayed:
+
+Automatically crop the q-space panel
+
+Automatically detects the plotted reciprocal-space region.
+
+Fit image exactly inside the q-space frame
+
+Fits the detected image region to the selected reciprocal-space limits.
+
+Re-detect and frame image
+
+Runs the image detection and framing process again.
+
+Use this option if the displayed image does not align correctly with the reciprocal-space axes.
+
+
+Checking the q-space limits
+
+Check the displayed values for:
+
+- qr minimum
+- qr maximum
+- qz minimum
+- qz maximum
+
+These values define the reciprocal-space region shown in the plot.
+
+When the corresponding NPZ is loaded, the PNG can also be framed using the qr and qz axes stored directly in the NPZ.
+
+The PNG and NPZ should represent the same experimental measurement.
+
+
+Adding the NPZ calculation files
+
+Find the automatic indexing section and select:
+
+Add NPZ calculation files…
+
+Choose the NPZ file that corresponds to the experimental PNG.
+
+Multiple NPZ measurements can also be added when analyzing a measurement series.
+
+The added measurements appear in the measurement table.
+
+Depending on the available file information, the table can contain fields such as:
+
+- Sample
+- Series
+- Angle
+- Scan
+- reciprocal-space limits
+
+Check these values before starting the calculation.
+
+If measurement information was not identified correctly, edit the appropriate table entry.
+
+
+Selecting the reference NPZ
+
+Find the section labeled:
+
+Manual experimental peak selection and comparison
+
+Under Reference NPZ for clicked intensity, select the NPZ that corresponds to the displayed PNG.
+
+For standard use, keep this option enabled:
+
+Frame the PNG using the selected NPZ q axes
+
+This aligns the displayed PNG with the numerical reciprocal-space axes stored in the selected NPZ.
+
+
+Peak snapping
+
+Keep this option enabled during normal peak selection:
+
+Snap click to the nearby experimental peak center
+
+When an experimental peak is clicked, the program searches within the selected local radius and adjusts the selected position toward the nearby peak center.
+
+The search radius can be changed using:
+
+Local snap radius (pixels)
+
+
+Choosing the automatic indexing workflow
+
+The automatic indexing section provides three workflow options:
+
+Fast test indexing
+
+Runs a reduced calculation for checking the input files and basic setup.
+
+Standard indexing
+
+Runs the standard indexing procedure.
+
+Improved coverage indexing
+
+Runs the more complete indexing workflow and is the default mode in the current program.
+
+For the complete calculation, select:
+
+Improved coverage indexing
+
+An output folder can also be selected if indexing results should be saved to a specific location.
+
+
+Running the automatic indexing calculator
+
+After the CIF and NPZ inputs have been loaded, select:
+
+Run full automatic indexing calculator
+
+The calculator analyzes the numerical NPZ data.
+
+The calculation includes:
+
+- feature detection
+- registration and consensus analysis
+- orientation searching
+- calibration
+- peak recovery
+- multidomain testing
+- validation
+
+The progress bar shows the current stage of the calculation.
+
+The progress log provides additional processing information.
+
+Select Cancel to stop an active calculation.
+
+After the automatic calculation is complete, calculated reflection positions are displayed over the experimental PNG.
+
+
+Adjusting the calculated reflection display
+
+Find the section labeled:
+
+Display controls
+
+The automatic reflection overlay can be adjusted using the following options.
+
+Show automatic-calculator simulation points
+
+Displays or hides the calculated reflection positions.
+
+Show only the strongest automatic-calculator reflection positions
+
+Limits the overlay to the strongest calculated reflections.
+
+Keeping this enabled reduces visual clutter when many theoretical reflections are present.
+
+Number of strongest automatic-calculator points
+
+Controls the maximum number of calculated reflection positions displayed.
+
+Hide automatic-calculator reflections in masked/invalid NPZ regions
+
+Prevents calculated points from being displayed in regions marked as invalid by the NPZ mask.
+
+These settings change the display only. They do not remove reflections from the underlying calculation.
+
+
+Selecting an experimental peak
+
+After the automatic calculation is complete, individual experimental peaks can be paired with calculated reflections.
+
+First, left-click a visible experimental peak on the PNG.
+
+The program records the selected location and obtains its numerical q coordinates and experimental intensity from the selected reference NPZ.
+
+If peak snapping is enabled, the selected position is adjusted toward the nearby experimental peak center.
+
+After the experimental peak is selected, the program waits for the corresponding calculated reflection to be assigned.
+
+
+Assigning a calculated reflection
+
+Calculated reflections are displayed as white circles.
+
+There are two ways to create an assignment.
+
+Method 1: Click the calculated reflection
+
+Left-click the white calculated circle that corresponds to the selected experimental peak.
+
+If the calculated point falls within the selected click tolerance, the experimental and calculated peaks are paired.
+
+Method 2: Select an HKL candidate
+
+If several calculated points are close together, or the appropriate white circle is difficult to select, use the nearest calculated HKL candidate list.
+
+The candidate information includes:
+
+- HKL
+- calculated q coordinates
+- difference in q
+- match score
+- support
+- calculated intensity
+- assignment stability
+
+Select the appropriate calculated reflection and complete the assignment.
+
+
+Repeating the process for additional peaks
+
+Repeat the same process for each peak that should be compared:
+
+1. Left-click an experimental peak.
+2. Select the corresponding calculated reflection.
+3. Complete the assignment.
+4. Continue with the next experimental peak.
+
+Each completed assignment is added to the experimental/calculated comparison table.
+
+
+Reviewing the comparison table
+
+The table below the reciprocal-space display contains the completed experimental/calculated assignments.
+
+Two views are available.
+
+Simple view
+
+Displays the main quantities needed for routine interpretation, including peak identification, q position, spacing, intensity, and match quality.
+
+Advanced view
+
+Displays additional diagnostic fields generated by the indexing and comparison calculations.
+
+Changing the table view changes only the displayed information. It does not recalculate or modify the peak assignments.
+
+
+Exporting the results
+
+After completing the desired peak assignments, select:
+
+Export assignment CSV…
+
+The experimental/calculated comparison table is saved as a CSV file.
+
+Previously saved assignments can be loaded using:
+
+Import assignment CSV…
+
+This allows a previous set of manual peak assignments to be restored.
+
+
+Important usage notes
+
+PNG and NPZ files must correspond
+
+The displayed PNG and selected reference NPZ should represent the same experimental measurement.
+
+The PNG provides the visual location of the experimental peak.
+
+The NPZ provides the numerical q coordinates and experimental intensity.
+
+Using a PNG and NPZ from different measurements can produce incorrect comparisons.
+
+
+CIF, NPZ, and PNG have separate functions
+
+CIF: crystal structure and calculated reflections
+
+NPZ: numerical experimental data
+
+PNG: visual experimental image
+
+The files are used together but are not interchangeable.
+
+
+Automatic and manual reflection patterns are separate
+
+The program can display a reflection pattern generated from manually selected lattice parameters, space group, and preferred orientation.
+
+This reflection pattern is separate from the calculated reflection positions generated by the full automatic NPZ indexing calculator.
+
+
+If the PNG is framed incorrectly
+
+Check:
+
+- qr minimum
+- qr maximum
+- qz minimum
+- qz maximum
+
+Then select:
+
+Re-detect and frame image
+
+Also confirm that Frame the PNG using the selected NPZ q axes is enabled when the corresponding NPZ has already been loaded.
+
+
+If an NPZ cannot be loaded
+
+For high-accuracy indexing, the NPZ should contain:
+
+- intensity
+- qr
+- qz
+
+NPZ files generated by the included PNG to NPZ converter contain these values.
+
+
+If too many calculated reflections are displayed
+
+Keep Show only the strongest automatic-calculator reflection positions enabled.
+
+Decrease Number of strongest automatic-calculator points if the overlay remains crowded.
+
+This changes only the visual display and does not alter the indexing calculation.
+
+
+Standard workflow
+
+1. Run the PNG to NPZ Converter with Python if numerical NPZ data is not already available.
+2. Convert the experimental PNG to NPZ.
+3. Run the GIWAXS/GIXS Indexing Workbench with Python.
+4. Load the CIF file.
+5. Load the experimental PNG.
+6. Check the reciprocal-space limits.
+7. Add the corresponding NPZ file.
+8. Select the correct reference NPZ.
+9. Run the full automatic indexing calculator.
+10. Review the calculated reflection overlay.
+11. Select an experimental peak.
+12. Assign the corresponding calculated reflection.
+13. Repeat for additional peaks.
+14. Review the comparison table.
+15. Export the assignments as a CSV file.
